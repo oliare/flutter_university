@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_init/register_form_page.dart';
+import 'package:flutter_init/posts.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Register Form Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: RegisterFormPage(),
+      home: PostsPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
-
