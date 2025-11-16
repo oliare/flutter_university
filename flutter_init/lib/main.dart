@@ -1,145 +1,71 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MyFirstApp());
 
-class MyApp extends StatelessWidget {
+class MyFirstApp extends StatefulWidget {
+  @override
+  _MyFirstAppState createState() => _MyFirstAppState();
+}
+
+class _MyFirstAppState extends State<MyFirstApp> {
+  bool _loading = false;
+  double _progressValue = 0.0;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Weather', style: TextStyle(color: Colors.black87)),
+          title: Text('My First App'),
           centerTitle: true,
-          backgroundColor: Colors.teal,
-          leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-          iconTheme: IconThemeData(color: Colors.black54),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.settings), onPressed: () {}),
-          ],
         ),
-        body: _buildBody(),
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: _loading
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      LinearProgressIndicator(value: _progressValue),
+                      SizedBox(height: 20),
+                      Text(
+                        '${(_progressValue * 100).round()}%',
+                        style: TextStyle(color: Colors.blue, fontSize: 24),
+                      ),
+                    ],
+                  )
+                : Text(
+                    'Press the button to start download',
+                    style: TextStyle(color: Colors.black, fontSize: 20),
+                    textAlign: TextAlign.center,
+                  ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _loading ? null : _startDownload,
+          child: Icon(Icons.cloud_download),
+        ),
       ),
     );
   }
-}
 
-Widget _buildBody() {
-  return SingleChildScrollView(
-    child: Column(
-      children: <Widget>[
-        _headerImage(),
-        SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                _weatherDescription(),
-                Divider(),
-                _temperature(),
-                Divider(),
-                _temperatureForecast(),
-                Divider(),
-                _footerRatings(),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+  void _startDownload() {
+    setState(() {
+      _loading = true;
+      _progressValue = 0.0;
+    });
 
-Image _headerImage() {
-  return Image.asset("images/image1.png", width: 440, fit: BoxFit.cover);
-}
-
-Column _weatherDescription() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: <Widget>[
-      Text(
-        'Tuesday - September 1',
-        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, fontFamily: "Nunito"),
-      ),
-      Divider(),
-      Text(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-        'Pellentesque odio ligula, sagittis ut mi vel, tincidunt porttitor urna. '
-        'Proin eu pretium diam. Curabitur gravida diam volutpat, fermentum nunc nec, '
-        'accumsan odio.',
-        style: TextStyle(
-          color: Colors.black54, fontFamily: "Nunito"),
-      ),
-    ],
-  );
-}
-
-Row _temperature() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[Icon(Icons.wb_sunny, color: Colors.yellow)],
-      ),
-      SizedBox(width: 16.0),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text('15° Clear', style: TextStyle(color: Colors.deepPurple)),
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Text(
-                'Rivnenska oblast, Rivne',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
-Wrap _temperatureForecast() {
-  return Wrap(
-    spacing: 10.0,
-    children: List.generate(8, (int index) {
-      return Chip(
-        label: Text('${index + 20}°C', style: TextStyle(fontSize: 15.0)),
-        avatar: Icon(Icons.wb_cloudy, color: Colors.blue.shade300),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-          side: BorderSide(color: Colors.grey),
-        ),
-        backgroundColor: Colors.grey.shade100,
-      );
-    }),
-  );
-}
-
-Row _footerRatings() {
-  var stars = Row(
-    mainAxisSize: MainAxisSize.min,
-    children: <Widget>[
-      Icon(Icons.star, size: 15.0, color: Colors.yellow[600]),
-      Icon(Icons.star, size: 15.0, color: Colors.yellow[600]),
-      Icon(Icons.star, size: 15.0, color: Colors.yellow[600]),
-      Icon(Icons.star, size: 15.0, color: Colors.yellow[600]),
-      Icon(Icons.star, size: 15.0, color: Colors.black),
-    ],
-  );
-
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: <Widget>[
-      Text('Info with ua.sinoptik.ua', style: TextStyle(fontSize: 15.0)),
-      stars,
-    ],
-  );
+    const oneSec = Duration(seconds: 1);
+    Timer.periodic(oneSec, (Timer timer) {
+      setState(() {
+        _progressValue += 0.05;
+        if (_progressValue >= 1.0) {
+          _loading = false;
+          timer.cancel();
+          _progressValue = 0.0;
+        }
+      });
+    });
+  }
 }
