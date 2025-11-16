@@ -1,75 +1,132 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
+void main() => runApp(const MyApp());
+
+class ScreenArguments {
+  final String title;
+  final String message;
+
+  ScreenArguments(this.title, this.message);
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Named Routes Demo',
-      initialRoute: '/',
+      title: 'Navigation with Arguments',
+      home: const HomeScreen(),
       routes: {
-        '/': (context) => const FirstScreen(),
-        '/second': (context) => const SecondScreen(),
+        ExtractArgumentsScreen.routeName: (context) => const ExtractArgumentsScreen(),
       },
-    ),
-  );
+      onGenerateRoute: (settings) {
+        if (settings.name == PassArgumentsScreen.routeName) {
+          final args = settings.arguments as ScreenArguments;
+          return MaterialPageRoute(
+            builder: (context) => PassArgumentsScreen(
+              title: args.title,
+              message: args.message,
+            ),
+          );
+        }
+        assert(false, 'Need to implement ${settings.name}');
+        return null;
+      },
+    );
+  }
 }
 
-class FirstScreen extends StatelessWidget {
-  const FirstScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'First Screen',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(164, 167, 83, 151),
-      ),
+      appBar: AppBar(title: const Text('Home Screen'), centerTitle: true),
       body: Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            textStyle: const TextStyle(fontSize: 18),
-          ),
-          onPressed: () {
-            Navigator.pushNamed(context, '/second');
-          },
-          child: const Text('Launch Second Screen'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  ExtractArgumentsScreen.routeName,
+                  arguments: ScreenArguments(
+                    'Extract Arguments Screen',
+                    'This message is extracted in the build method.',
+                  ),
+                );
+              },
+              child: const Text('Navigate to screen that extracts arguments'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  PassArgumentsScreen.routeName,
+                  arguments: ScreenArguments(
+                    'Pass Arguments Screen',
+                    'This message is extracted in the onGenerateRoute function.',
+                  ),
+                );
+              },
+              child: const Text('Navigate to screen that accepts arguments'),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class SecondScreen extends StatelessWidget {
-  const SecondScreen({Key? key}) : super(key: key);
+class ExtractArgumentsScreen extends StatelessWidget {
+  const ExtractArgumentsScreen({super.key});
+  static const routeName = '/extractArguments';
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Second Screen',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(164, 92, 141, 94),
-      ),
+      appBar: AppBar(title: Text(args.title), centerTitle: true),
       body: Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            textStyle: const TextStyle(fontSize: 18),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Go Back to First Screen'),
+        child: Text(
+          args.message,
+          style: const TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
         ),
       ),
     );
   }
 }
+
+class PassArgumentsScreen extends StatelessWidget {
+  static const routeName = '/passArguments';
+  final String title;
+  final String message;
+
+  const PassArgumentsScreen({
+    super.key,
+    required this.title,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title), centerTitle: true),
+      body: Center(
+        child: Text(
+          message,
+          style: const TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+}
+
