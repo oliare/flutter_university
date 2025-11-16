@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+final List<String> pizza = <String>["Маргарита", "М'ясна", "Чотири сири"];
+
+final List<String> receptPizza = <String>[
+  "Кукурудза, томати, сир, курка, ананас",
+  "Бекон, мисливські ковбаски, сир",
+  "Чедер, Мацарела, Фетта, Рокфорд",
+];
 
 void main() {
   runApp(MyApp());
@@ -9,102 +18,62 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "StatelessWidget simple",
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
+      title: 'Flutter Pizza App',
+      theme: ThemeData(primarySwatch: Colors.red),
       home: Scaffold(
-        backgroundColor: const Color.fromARGB(180, 78, 151, 224),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              HintLabel('Click "-" for decrement'),
-              SizedBox(height: 8.0),
-              CounterWidget(),
-              SizedBox(height: 8.0),
-              HintLabel('Click "+" for increment'),
-            ],
+        appBar: AppBar(
+          title: Text(
+            "Список піц",
+            style: TextStyle(
+              fontFamily: "Nunito",
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              color: const Color.fromARGB(227, 66, 31, 91),
+              letterSpacing: 1.2,
+            ),
           ),
+          centerTitle: true,
         ),
+        body: PizzaListView(),
       ),
     );
   }
 }
 
-class HintLabel extends StatelessWidget {
-  final String text;
-
-  const HintLabel(this.text, {Key? key}) : super(key: key);
-
+class PizzaListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(121, 7, 13, 94),
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(
-          text,
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-    );
-  }
-}
-
-class CounterWidget extends StatefulWidget {
-  @override
-  _CounterWidgetState createState() => _CounterWidgetState();
-}
-
-class _CounterWidgetState extends State<CounterWidget> {
-  int _count = 0;
-
-  void _increment() {
-    setState(() {
-      _count++;
-    });
-  }
-
-  void _decrement() {
-    setState(() {
-      if (_count > 0) _count--;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.0),
-      margin: EdgeInsets.symmetric(horizontal: 5.0),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(187, 8, 54, 111),
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            onPressed: _decrement,
-            icon: Icon(Icons.remove, color: Colors.white),
+    return ListView.separated(
+      padding: const EdgeInsets.all(8),
+      itemCount: pizza.length,
+      separatorBuilder: (BuildContext context, int index) => Divider(),
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+          leading: Icon(Icons.local_pizza, size: 28, color: Colors.red),
+          title: Text(
+            pizza[index],
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Nunito",
+            ),
           ),
-          Text(
-            '$_count',
-            style: TextStyle(fontSize: 40, color: Colors.white),
-          ),
-          IconButton(
-            onPressed: _increment,
-            icon: Icon(Icons.add, color: Colors.white),
-          ),
-        ],
-      ),
+          subtitle: Text("Склад: ${receptPizza[index]}"),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            print("Вибрано піцу: ${pizza[index]}");
+
+            Fluttertoast.showToast(
+              msg: "Вибрано піцу: ${pizza[index]}",
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          },
+        );
+      },
     );
   }
 }
