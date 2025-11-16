@@ -1,71 +1,110 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyFirstApp());
-
-class MyFirstApp extends StatefulWidget {
-  @override
-  _MyFirstAppState createState() => _MyFirstAppState();
+void main() {
+  runApp(MyApp());
 }
 
-class _MyFirstAppState extends State<MyFirstApp> {
-  bool _loading = false;
-  double _progressValue = 0.0;
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "StatelessWidget simple",
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('My First App'),
-          centerTitle: true,
-        ),
+        backgroundColor: const Color.fromARGB(180, 78, 151, 224),
         body: Center(
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: _loading
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      LinearProgressIndicator(value: _progressValue),
-                      SizedBox(height: 20),
-                      Text(
-                        '${(_progressValue * 100).round()}%',
-                        style: TextStyle(color: Colors.blue, fontSize: 24),
-                      ),
-                    ],
-                  )
-                : Text(
-                    'Press the button to start download',
-                    style: TextStyle(color: Colors.black, fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              HintLabel('Click "-" for decrement'),
+              SizedBox(height: 8.0),
+              CounterWidget(),
+              SizedBox(height: 8.0),
+              HintLabel('Click "+" for increment'),
+            ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _loading ? null : _startDownload,
-          child: Icon(Icons.cloud_download),
         ),
       ),
     );
   }
+}
 
-  void _startDownload() {
+class HintLabel extends StatelessWidget {
+  final String text;
+
+  const HintLabel(this.text, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(121, 7, 13, 94),
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class CounterWidget extends StatefulWidget {
+  @override
+  _CounterWidgetState createState() => _CounterWidgetState();
+}
+
+class _CounterWidgetState extends State<CounterWidget> {
+  int _count = 0;
+
+  void _increment() {
     setState(() {
-      _loading = true;
-      _progressValue = 0.0;
+      _count++;
     });
+  }
 
-    const oneSec = Duration(seconds: 1);
-    Timer.periodic(oneSec, (Timer timer) {
-      setState(() {
-        _progressValue += 0.05;
-        if (_progressValue >= 1.0) {
-          _loading = false;
-          timer.cancel();
-          _progressValue = 0.0;
-        }
-      });
+  void _decrement() {
+    setState(() {
+      if (_count > 0) _count--;
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.0),
+      margin: EdgeInsets.symmetric(horizontal: 5.0),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(187, 8, 54, 111),
+        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: _decrement,
+            icon: Icon(Icons.remove, color: Colors.white),
+          ),
+          Text(
+            '$_count',
+            style: TextStyle(fontSize: 40, color: Colors.white),
+          ),
+          IconButton(
+            onPressed: _increment,
+            icon: Icon(Icons.add, color: Colors.white),
+          ),
+        ],
+      ),
+    );
   }
 }
