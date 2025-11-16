@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'Navigation Basics',
-    home: FirstRoute(),
-  ));
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Named Routes Demo',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const FirstScreen(),
+        '/second': (context) => const SecondScreen(),
+      },
+    ),
+  );
 }
 
-class FirstRoute extends StatelessWidget {
-  const FirstRoute({Key? key}) : super(key: key);
+class FirstScreen extends StatelessWidget {
+  const FirstScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'First Route',
+          'First Screen',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(155, 33, 149, 243),
+        backgroundColor: const Color.fromARGB(164, 167, 83, 151),
       ),
       body: Center(
         child: ElevatedButton(
@@ -28,32 +34,29 @@ class FirstRoute extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             textStyle: const TextStyle(fontSize: 18),
           ),
-          child: const Text('Open Second Route'),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SecondRoute()),
-            );
+            Navigator.pushNamed(context, '/second');
           },
+          child: const Text('Launch Second Screen'),
         ),
       ),
     );
   }
 }
 
-class SecondRoute extends StatelessWidget {
-  const SecondRoute({Key? key}) : super(key: key);
+class SecondScreen extends StatelessWidget {
+  const SecondScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Second Route",
+          'Second Screen',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(155, 33, 149, 243),
+        backgroundColor: const Color.fromARGB(164, 92, 141, 94),
       ),
       body: Center(
         child: ElevatedButton(
@@ -64,7 +67,7 @@ class SecondRoute extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Go Back!'),
+          child: const Text('Go Back to First Screen'),
         ),
       ),
     );
